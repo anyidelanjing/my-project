@@ -1,6 +1,6 @@
 
 <script>
-// import config from './config'
+import config from './config'
 // import qcloud from 'wafer2-client-sdk'
 export default {
   created () {

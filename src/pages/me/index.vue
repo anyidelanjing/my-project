@@ -28,21 +28,25 @@
 <script>
 // import personal from '../../components/personal/personal'
 import timeleft from '../../components/timeleft/timeleft'
-// import config from '../../config'
+import config from '../../config'
+import {post,showModal} from '@/utils/index.js'
+// const {mysql} = require('/server/qcloud')
+import qcloud from 'wafer2-client-sdk'
 export default {
   data () {
     return {
       toggleshow: true,
-      userinfo: false
+      userinfo: false,
+      openid: ''
     }
   },
   created () {
-
+    console.log(qcloud.login)
   },
   computed: {
     showPersonal (e) {
       this.toggleshow = !this.toggleshow
-      console.log(this.toggleshow)
+      // console.log(this.toggleshow)
     },
     showAlert () {
       return this.userinfo
@@ -52,15 +56,90 @@ export default {
     onGotUserInfo (e) {
       if (e.target.userInfo) {
         this.userinfo = true
+        let that = this
+       wx.login({ 
+        success: function(res) {
+         let APPID = 'wx982d1b90336d0f2c';
+         let  SECRET = 'b63eb135f3393bb0c88229d96404c485';
+        // console.log(res.code)
+        if (res.code) {
+          //发起网络请求
+          wx.request({
+            url: 'https://api.weixin.qq.com/sns/jscode2session?appid='+APPID+'&secret='+SECRET+'&js_code='+res.code+'&grant_type=authorization_code',
+            data: {
+              code: res.code
+            },
+            success: function(res){
+              // console.log(res.data.openid) 获取到openid
+              console.log(res) //获取到openid
+              //  mysql('csessioninfo').insert({'open_id': res.data.openid})
+              that.openid = res.data.openid
+
+            }
+          })
+        } else {
+          console.log('登录失败！' + res.errMsg)
+        }
       }
-      console.log('登录成功')
-      //  console.log(e)
+    });
+// wx.login({
+//   //      let APPID = 'wx982d1b90336d0f2c';
+//     //      let  SECRET = 'b63eb135f3393bb0c88229d96404c485';
+//         success: function (loginResult) {
+//          let APPID = 'wx982d1b90336d0f2c';
+//          let  SECRET = 'b63eb135f3393bb0c88229d96404c485';
+//           var loginParams = {
+//             code: loginResult.code,
+//             encryptedData: e.target.encryptedData,
+//             iv: e.target.iv,
+//           }
+//           qcloud.setLoginUrl('https://api.weixin.qq.com/sns/jscode2session?appid='+APPID+'&secret='+SECRET+'&js_code='+loginResult.code+'&grant_type=authorization_code')
+//           qcloud.requestLogin({
+//             loginParams,
+//             success() {
+//               // util.showSuccess('登录成功');
+
+//               that.setData({
+//                 userInfo: e.target.userInfo,
+//                 logged: true
+//               })
+//             },
+//             fail(error) {
+//               // showModel('登录失败', error)
+//               console.log('登录失败2', error)
+//             }
+//           });
+//         },
+//         fail: function (loginError) {
+//           // showModel('登录失败', loginError)
+//           console.log('登录失败1', loginError)
+//         },
+//       });
+      }
+      // console.log('登录成功')
+       console.log(e)
+
     // console.log(e.mp.detail.rawData)
+    },
+
+    async addBook (isbn) {
+      const res = await post('/weapp/addbook',{
+        isbn,
+        openid: this.openid
+        })
+        console.log(res)
+        showModal('添加成功', res.title+'添加成功')
+      // if (res.code ===0 &&res.data.title) {
+      //   console.log(res.data.title+'添加成功')
+      // }
     },
     scanBook () {
       wx.scanCode({
         success: (res) => {
-          console.log(res)
+          if (res.result) {
+            // console.log(res.result)
+            this.addBook(res.result)
+          }
         }
       })
     }
