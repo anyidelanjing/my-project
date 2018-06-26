@@ -1,7 +1,7 @@
 <template>
     <div class="rate">
-        <span>☆☆☆☆☆</span>
-        <div class="hollow" :style='style'>★★★★★</div>
+        <span>☆☆☆☆☆</span> 
+         <div class="hollow" :style='style'>★★★★★</div>
     </div>
 </template>
 <script type='text/ecmascript-6'>
@@ -14,7 +14,7 @@
         },
         computed: {
             style() {
-                return `width:${parseInt(this.value)/2-0.5}em`
+                return `width:${(this.value)/2-0.17*this.value/2}em`
             }
         }
     }
@@ -24,6 +24,7 @@
         position relative
         display inline-block
         color: #ea5149
+        font-size: 14px;
         .hollow
             position absolute
             display inline-block

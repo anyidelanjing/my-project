@@ -5,6 +5,7 @@ const app = new Vue(App)
 app.$mount()
 export default {
   config: {
-    navigationBarTitleText: '书籍'
+    navigationBarTitleText: '书籍',
+    enablePullDownRefresh: true
   }
 }
