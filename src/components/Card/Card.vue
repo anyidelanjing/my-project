@@ -1,4 +1,5 @@
 <template>
+<a :href="detailUrl" >
   <div class="book-card" >
       <div class="thumb">
           <img :src="book.image" alt="" class='img' mode='aspectFit'>
@@ -30,6 +31,7 @@
           </div>
       </div>
   </div>
+</a>
 </template>
 
 <script>
@@ -41,6 +43,11 @@ import star from '@/components/star/star'
         props:{
             book:{
                 type: Object
+            }
+        },
+        computed: {
+            detailUrl() {
+                return '/pages/detail/main?id='+this.book.id
             }
         },
         components:{star}
